@@ -34,7 +34,6 @@ class GlueJob(object):
     @staticmethod
     def _get_glue_args(cli_args):
         from awsglue.utils import getResolvedOptions
-
         glue_args = getResolvedOptions(args=sys.argv, options=["JOB_NAME"] + cli_args)
         return glue_args
 
