@@ -43,8 +43,9 @@ class TestGlueJob(unittest.TestCase):
 
     @mock.patch.object(GlueJob, '_commit_job')
     @mock.patch.object(GlueJob, '_get_glue_args')
-    @mock.patch.object(GlueJob, '_get_spark_session_and_job')
+    @mock.patch.object(GlueJob, '_get_spark_session_and_glue_job')
     def test_concat_documents_runs_successfully(self, m_glue_session_and_job, m_get_glue_args, m_commit_kob):
+        # arrange
         cli_args = {
             'source': self.s3_source,
             'destination': self.s3_destination
@@ -52,9 +53,11 @@ class TestGlueJob(unittest.TestCase):
 
         m_glue_session_and_job.return_value = self.spark, None
         m_get_glue_args.return_value = cli_args
-        # act
-        GlueJob(cli_args=cli_args, spark=self.spark).run()
 
+        # act
+        GlueJob().run(cli_args=cli_args, spark=self.spark)
+
+        # assert
         df = self.spark.read.csv(self.s3_destination)
         self.assertTrue(not df.rdd.isEmpty())
 
