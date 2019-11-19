@@ -32,7 +32,7 @@ class TestGlueJob(unittest.TestCase):
         # Setup spark to use s3, and point it to the moto server.
         os.environ[
             "PYSPARK_SUBMIT_ARGS"
-        ] = '--packages "org.apache.hadoop:hadoop-aws:2.7.3" pyspark-shell'
+        ] = """--packages "org.apache.hadoop:hadoop-aws:2.7.3" pyspark-shell"""
         cls.spark = SparkSession.builder.getOrCreate()
         hadoop_conf = cls.spark.sparkContext._jsc.hadoopConfiguration()
         hadoop_conf.set("fs.s3.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
