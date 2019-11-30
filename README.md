@@ -1,9 +1,10 @@
 # Testing Glue Pyspark jobs
 
-This repo contains example code on how you can test your glue pyspark jobs.
+This repo contains example code that shows how you can test your glue pyspark jobs.
+
 It accompanies this article on medium
 
-`testing_mocked_s3.py` -> is the script used in the article
+`testing_mocked_s3.py` -> is the script used in the article.
 
 `glue_job.py` -> is the glue pyspark job
 

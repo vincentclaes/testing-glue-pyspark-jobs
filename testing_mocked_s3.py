@@ -38,8 +38,9 @@ columns = ["key", "value"]
 df = spark.createDataFrame(values, columns)
 # write the dataframe as csv to s3.
 df.write.csv("s3://bucket/source.csv")
-# read the dataset from s3 and assert
+# read the dataset from s3
 df = spark.read.csv("s3://bucket/source.csv")
+# assert df is a DataFrame
 assert isinstance(df, DataFrame)
 # shut down the moto server.
 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
