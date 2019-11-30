@@ -7,22 +7,29 @@ from unittest import mock
 import boto3
 from pyspark.sql import SparkSession
 
-from glue_job import GlueJob
+import glue_job
 
 
 class TestGlueJob(unittest.TestCase):
-    S3_MOCK_ENDPOINT = "http://127.0.0.1:5000"
+    """this function sets up a spark cluster, dumps a dataset to s3
+     and runs a test that gets the s3 file, does some processing
+     and dumps the result back on s3"""
+
 
     @classmethod
     def setUpClass(cls):
+        S3_MOCK_ENDPOINT = "http://127.0.0.1:5000"
+
         # setup moto server
         cls.process = subprocess.Popen(
-            "moto_server s3", stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid
+            "moto_server s3", stdout=subprocess.PIPE,
+            shell=True, preexec_fn=os.setsid
         )
 
         # create s3 connection, bucket and s3 url's
         cls.s3_conn = boto3.resource(
-            "s3", region_name="eu-central-1", endpoint_url=TestGlueJob.S3_MOCK_ENDPOINT
+            "s3", region_name="eu-central-1",
+            endpoint_url=S3_MOCK_ENDPOINT
         )
         bucket = "bucket"
         cls.s3_conn.create_bucket(Bucket=bucket)
@@ -38,7 +45,7 @@ class TestGlueJob(unittest.TestCase):
         hadoop_conf.set("fs.s3.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
         hadoop_conf.set("fs.s3a.access.key", "mock")
         hadoop_conf.set("fs.s3a.secret.key", "mock")
-        hadoop_conf.set("fs.s3a.endpoint", TestGlueJob.S3_MOCK_ENDPOINT)
+        hadoop_conf.set("fs.s3a.endpoint", S3_MOCK_ENDPOINT)
 
         # create source dataframe and write the dataframe as csv to s3
         values = [("k1", 1), ("k2", 2)]
@@ -46,9 +53,9 @@ class TestGlueJob(unittest.TestCase):
         df = cls.spark.createDataFrame(values, columns)
         df.write.csv(cls.s3_source)
 
-    @mock.patch.object(GlueJob, "_commit_job")
-    @mock.patch.object(GlueJob, "_get_glue_args")
-    @mock.patch.object(GlueJob, "_get_spark_session_and_glue_job")
+    @mock.patch("glue_job._commit_job")
+    @mock.patch("glue_job._get_glue_args")
+    @mock.patch("glue_job._get_spark_session_and_glue_job")
     def test_glue_job_runs_successfully(self, m_session_job, m_get_glue_args, m_commit):
         # arrange
         cli_args = {"source": self.s3_source, "destination": self.s3_destination}
@@ -57,7 +64,7 @@ class TestGlueJob(unittest.TestCase):
         m_get_glue_args.return_value = cli_args
 
         # act
-        GlueJob().run(cli_args=cli_args, spark=self.spark)
+        glue_job.run(cli_args=cli_args, spark=self.spark)
 
         # assert
         df = self.spark.read.csv(self.s3_destination)
@@ -70,4 +77,7 @@ class TestGlueJob(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    try:
+        unittest.main()
+    except Exception:
+        TestGlueJob().tearDownClass()
