@@ -11,7 +11,7 @@ process = subprocess.Popen(
     "moto_server s3", stdout=subprocess.PIPE,
     shell=True, preexec_fn=os.setsid
 )
-# create s3 connection that points to the moto server.
+# create an s3 connection that points to the moto server.
 s3_conn = boto3.resource(
     "s3", endpoint_url="http://127.0.0.1:5000"
 )
