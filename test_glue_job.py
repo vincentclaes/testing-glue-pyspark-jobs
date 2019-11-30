@@ -11,13 +11,17 @@ import glue_job
 
 
 class TestGlueJob(unittest.TestCase):
-    """this function sets up a spark cluster, dumps a dataset to s3
-     and runs a test that gets the s3 file, does some processing
-     and dumps the result back on s3"""
-
+    """
+    This test class setup a test environment to test our glue job,
+    runs the glue job and checks the result.
+    """
 
     @classmethod
     def setUpClass(cls):
+        """
+        the setup class starts a moto server, creates an S3 bucket,
+        configures PySpark and Spark and dumps the source dataframe to S3.
+        """
         S3_MOCK_ENDPOINT = "http://127.0.0.1:5000"
 
         # setup moto server
@@ -57,6 +61,11 @@ class TestGlueJob(unittest.TestCase):
     @mock.patch("glue_job._get_glue_args")
     @mock.patch("glue_job._get_spark_session_and_glue_job")
     def test_glue_job_runs_successfully(self, m_session_job, m_get_glue_args, m_commit):
+        """
+        we arrange our test function; construct the arguments that we get from the cli, set the return
+        values of our mocked functions.
+        we run our glue job and assert if the result is what we expect.
+        """
         # arrange
         cli_args = {"source": self.s3_source, "destination": self.s3_destination}
 
