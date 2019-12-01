@@ -2,7 +2,7 @@
 
 This repo contains example code that shows how you can test your glue pyspark jobs.
 
-It accompanies this article on medium https://medium.com/@vincentclaes_43752/testing-glue-pyspark-jobs-4b544d62106e
+It accompanies this article on medium https://towardsdatascience.com/testing-glue-pyspark-jobs-4b544d62106e
 
 `testing_mocked_s3.py` -> is the script used in the article.
 
